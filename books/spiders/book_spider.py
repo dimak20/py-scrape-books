@@ -1,3 +1,5 @@
+from typing import Iterable, Dict
+
 import scrapy
 from scrapy.http import Response
 
@@ -32,7 +34,7 @@ class BookSpiderSpider(scrapy.Spider):
         if next_page is not None:
             yield response.follow(next_page, callback=self.parse)
 
-    def parse_book(self, response: Response) -> dict:
+    def parse_book(self, response: Response) -> Iterable[Dict]:
         yield {
             "title": response.css(TITLE_CSS).get(),
             "price": float(
