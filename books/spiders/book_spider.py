@@ -1,6 +1,16 @@
 import scrapy
 from scrapy.http import Response
 
+BOOK_LIST_CSS = "li.col-xs-6"
+NEXT_PAGE_CSS = "li.next a::attr(href)"
+TITLE_CSS = "div.col-sm-6 h1::text"
+PRICE_CSS = "div.col-sm-6 p.price_color::text"
+AMOUNT_CSS = "div.col-sm-6 p.instock *::text"
+RATING_CSS = "div.col-sm-6 p.star-rating::attr(class)"
+CATEGORY_CSS = "ul.breadcrumb li"
+DESCRIPTION_CSS = "article.product_page p::text"
+UPC_CSS = "table.table tr"
+
 
 class BookSpiderSpider(scrapy.Spider):
     name = "book_spider"
@@ -8,7 +18,7 @@ class BookSpiderSpider(scrapy.Spider):
     start_urls = ["https://books.toscrape.com/"]
 
     def parse(self, response: Response, **kwargs) -> Response:
-        for book in response.css("li.col-xs-6"):
+        for book in response.css(BOOK_LIST_CSS):
             detail_page = book.css(
                 "h3 a::attr(href)"
             ).get()
@@ -17,35 +27,35 @@ class BookSpiderSpider(scrapy.Spider):
             )
 
         next_page = response.css(
-            "li.next a::attr(href)"
+            NEXT_PAGE_CSS
         ).get()
         if next_page is not None:
             yield response.follow(next_page, callback=self.parse)
 
     def parse_book(self, response: Response) -> dict:
         yield {
-            "title": response.css("div.col-sm-6 h1::text").get(),
+            "title": response.css(TITLE_CSS).get(),
             "price": float(
                 response.css(
-                    "div.col-sm-6 p.price_color::text"
+                    PRICE_CSS
                 ).get().replace("£", "")
             ),
             "amount_in_stock": int("".join(
-                response.css("div.col-sm-6 p.instock *::text").getall()
+                response.css(AMOUNT_CSS).getall()
             ).strip().split("(")[1].split()[0]),
             "rating": self._word_to_number(
                 response.css(
-                    "div.col-sm-6 p.star-rating::attr(class)"
+                    RATING_CSS
                 ).get().split()[1]
             ),
             "category": response.css(
-                "ul.breadcrumb li"
+                CATEGORY_CSS
             ).getall()[2].split('html">')[1].split("</a")[0],
             "description": response.css(
-                "article.product_page p::text"
+                DESCRIPTION_CSS
             ).getall()[10],
             "upc": response.css(
-                "table.table tr"
+                UPC_CSS
             ).getall()[0].split("td>")[1].split("<")[0]
         }
 
@@ -63,4 +73,4 @@ class BookSpiderSpider(scrapy.Spider):
             "nine": 9,
             "ten": 10
         }
-        return words_to_digits.get(word.lower(), "Invalid input")
+        return words_to_digits.get(word.lower(), -1)
