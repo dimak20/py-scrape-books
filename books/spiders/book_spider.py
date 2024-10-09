@@ -9,9 +9,9 @@ TITLE_CSS = "div.col-sm-6 h1::text"
 PRICE_CSS = "div.col-sm-6 p.price_color::text"
 AMOUNT_CSS = "div.col-sm-6 p.instock *::text"
 RATING_CSS = "div.col-sm-6 p.star-rating::attr(class)"
-CATEGORY_CSS = "ul.breadcrumb li"
+CATEGORY_CSS = "ul.breadcrumb li" # response.css("ul.breadcrumb li:nth-child(3) a::text").get()
 DESCRIPTION_CSS = "article.product_page p::text"
-UPC_CSS = "table.table tr"
+UPC_CSS = "table.table tr" # response.css("table.table tr:nth-child(1) td::text").get()
 
 
 class BookSpiderSpider(scrapy.Spider):
