@@ -64,6 +64,3 @@ class BookSpiderSpider(scrapy.Spider):
             "ten": 10
         }
         return words_to_digits.get(word.lower(), "Invalid input")
-
-# response.css("li.col-xs-6") # books
-# response.css("h3 a::attr(href)").get() # detail
